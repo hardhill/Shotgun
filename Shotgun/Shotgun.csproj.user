@@ -5,5 +5,6 @@
     <ActiveDebugProfile>Nexus_5X_API_30</ActiveDebugProfile>
     <AndroidDesignerPreferredTheme>AppTheme</AndroidDesignerPreferredTheme>
     <AndroidDesignerPreferredDevice>Nexus 5X</AndroidDesignerPreferredDevice>
+    <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
 </Project>
