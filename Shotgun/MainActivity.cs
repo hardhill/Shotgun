@@ -6,6 +6,8 @@ using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using Android.Content;
+using System;
+using Math = Java.Lang.Math;
 
 namespace Shotgun
 {
@@ -18,6 +20,7 @@ namespace Shotgun
         
         ImageView imgBlood;
         TextView lblBullets;
+        TextView txtPosition;
         Revolver revolver = new Revolver();
         SoundPool sounds;
         int soundShot;
@@ -34,9 +37,11 @@ namespace Shotgun
             bShot = FindViewById<Button>(Resource.Id.bShot);
             imgBlood = FindViewById<ImageView>(Resource.Id.imgBlood);
             lblBullets = FindViewById<TextView>(Resource.Id.lblBullets);
+            txtPosition = FindViewById<TextView>(Resource.Id.txtPosition);
 
             revolver.OnTakeBullet += Revolver_ChageBullet;
             revolver.OnShot += Revolver_ChageBullet;
+            revolver.ChangePosition += Revolver_ChangePosition;
 
             CreateSoundPool();
             LoadSounds();
@@ -45,7 +50,7 @@ namespace Shotgun
             {
                 imgBlood.Visibility = ViewStates.Gone;
                 revolver.TakeBullet();
-                lblBullets.Text = revolver.Bullets.ToString();
+                
             };
 
             bShot.Click += delegate
@@ -64,12 +69,24 @@ namespace Shotgun
                 }
                 
             };
+            bRevolver.Click += delegate
+            {
+                sounds.Play(soundRoll, 1f, 1f, 1, 0, 1);
+                revolver.RollBaraban();
+                imgBlood.Visibility = ViewStates.Gone;
+
+            };
             
+        }
+
+        private void Revolver_ChangePosition(int position)
+        {
+            txtPosition.Text = "Position:"+position.ToString();
         }
 
         private void Revolver_ChageBullet(int bullets)
         {
-            lblBullets.Text = bullets.ToString();
+            lblBullets.Text = "Bullets: "+bullets.ToString();
         }
 
         void CreateSoundPool()
@@ -87,6 +104,7 @@ namespace Shotgun
             //Toast.MakeText(context, "Grabbed Context!", ToastLength.Long).Show();
             soundShot = sounds.Load(context, Resource.Raw.revolver_shot, 1);
             soundFalse = sounds.Load(context,Resource.Raw.gun_false,1);
+            soundRoll = sounds.Load(context,Resource.Raw.revolver_baraban,1);
         }
 
         
@@ -95,11 +113,13 @@ namespace Shotgun
     {
         byte[] baraban = new byte[8];               //пустой барабан без патронов
         int position = 0;                           // позиция курка барабана
-        int _bullets = 0;
+        int _bullets = 0;                           // патронов в револьвере
         public int Bullets { get { return _bullets; } }
         public delegate void GunEvent(int bullets);
+        public delegate void PositionEvent(int position);
         public event GunEvent OnTakeBullet;
         public event GunEvent OnShot;
+        public event PositionEvent ChangePosition;
 
         // заряд пистолета одним патроном
         public void TakeBullet()
@@ -125,7 +145,7 @@ namespace Shotgun
                         bullet--;                           //что зарядили, то исчезает
                         OnTakeBullet?.Invoke(_bullets);
                     }
-                position = (position == 7) ? 0 : position + 1; // смещаем барабан на одну позицию
+                NextPosition(); // смещаем барабан на одну позицию
             }
 
         }
@@ -141,12 +161,25 @@ namespace Shotgun
                 result = true;
             }
             
-            position = (position == 7) ? 0 : position + 1;
+            NextPosition();
             OnShot?.Invoke(_bullets);
             return result;
         }
 
+        public void RollBaraban()
+        {
+            int randomPosition =  Convert.ToInt32(Math.Round(Math.Random() * 100));
+            for (int i = 0; i < randomPosition; i++)
+            {
+                NextPosition();
+            }
+        }
 
+        private void NextPosition()
+        {
+            position = (position == 7) ? 0 : position + 1;
+            ChangePosition?.Invoke(position);
+        }
     }
 
 }

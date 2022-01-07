@@ -3572,28 +3572,31 @@ namespace Shotgun
 			public const int transition_transform = 2131230902;
 			
 			// aapt resource value: 0x7F0800B7
-			public const int uniform = 2131230903;
+			public const int txtPosition = 2131230903;
 			
 			// aapt resource value: 0x7F0800B8
-			public const int unlabeled = 2131230904;
+			public const int uniform = 2131230904;
 			
 			// aapt resource value: 0x7F0800B9
-			public const int up = 2131230905;
+			public const int unlabeled = 2131230905;
 			
 			// aapt resource value: 0x7F0800BA
-			public const int useLogo = 2131230906;
+			public const int up = 2131230906;
 			
 			// aapt resource value: 0x7F0800BB
-			public const int view_offset_helper = 2131230907;
+			public const int useLogo = 2131230907;
 			
 			// aapt resource value: 0x7F0800BC
-			public const int visible = 2131230908;
+			public const int view_offset_helper = 2131230908;
 			
 			// aapt resource value: 0x7F0800BD
-			public const int withText = 2131230909;
+			public const int visible = 2131230909;
 			
 			// aapt resource value: 0x7F0800BE
-			public const int wrap_content = 2131230910;
+			public const int withText = 2131230910;
+			
+			// aapt resource value: 0x7F0800BF
+			public const int wrap_content = 2131230911;
 			
 			static Id()
 			{
