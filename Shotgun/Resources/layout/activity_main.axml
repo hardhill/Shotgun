@@ -19,7 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:srcCompat="@drawable/blood"
-        android:id="@+id/imgBlood"/>
+        android:id="@+id/imgBlood"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,6 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bRevolver"
+            android:backgroundTint="@android:color/holo_orange_light" 
             
             
             
@@ -61,7 +63,8 @@
             android:text="Shot"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/bShot" />
+            android:id="@+id/bShot"
+            android:backgroundTint="@android:color/holo_red_dark" />
     </LinearLayout>
 
 

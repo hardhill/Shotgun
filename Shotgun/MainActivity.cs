@@ -5,7 +5,7 @@ using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using Java.Lang;
-using System.Runtime.Remoting.Contexts;
+using Android.Content;
 
 namespace Shotgun
 {
@@ -35,12 +35,15 @@ namespace Shotgun
             imgBlood = FindViewById<ImageView>(Resource.Id.imgBlood);
             lblBullets = FindViewById<TextView>(Resource.Id.lblBullets);
 
+            revolver.OnTakeBullet += Revolver_ChageBullet;
+            revolver.OnShot += Revolver_ChageBullet;
+
             CreateSoundPool();
             LoadSounds();
 
             bLoad.Click += delegate
             {
-                imgBlood.Visibility = ViewStates.Visible;
+                imgBlood.Visibility = ViewStates.Gone;
                 revolver.TakeBullet();
                 lblBullets.Text = revolver.Bullets.ToString();
             };
@@ -51,19 +54,24 @@ namespace Shotgun
                 {
                     //звук выстрела
                     sounds.Play(soundShot, 1f, 1f, 1, 0, 1);
-                    imgBlood.Visibility = ViewStates.Gone;
+                    imgBlood.Visibility = ViewStates.Visible;
                 }
                 else
                 {
-                    imgBlood.Visibility = ViewStates.Visible;
+                    imgBlood.Visibility = ViewStates.Gone;
                     //звук холостого 
                     sounds.Play(soundFalse, 1f, 1f, 1, 0, 1);
                 }
-                lblBullets.Text = revolver.Bullets.ToString();
+                
             };
             
         }
-        
+
+        private void Revolver_ChageBullet(int bullets)
+        {
+            lblBullets.Text = bullets.ToString();
+        }
+
         void CreateSoundPool()
         {
            
@@ -75,9 +83,10 @@ namespace Shotgun
         }
         void LoadSounds()
         {
-            var mContext = Application.Context;
-            soundShot = sounds.Load((string)mContext, Resource.Raw.revolver_shot);
-            soundFalse = sounds.Load((string)mContext,Resource.Raw.gun_false);
+            Context context = ApplicationContext;
+            //Toast.MakeText(context, "Grabbed Context!", ToastLength.Long).Show();
+            soundShot = sounds.Load(context, Resource.Raw.revolver_shot, 1);
+            soundFalse = sounds.Load(context,Resource.Raw.gun_false,1);
         }
 
         
@@ -88,6 +97,11 @@ namespace Shotgun
         int position = 0;                           // позиция курка барабана
         int _bullets = 0;
         public int Bullets { get { return _bullets; } }
+        public delegate void GunEvent(int bullets);
+        public event GunEvent OnTakeBullet;
+        public event GunEvent OnShot;
+
+        // заряд пистолета одним патроном
         public void TakeBullet()
         {
             if (_bullets == 8)
@@ -103,28 +117,33 @@ namespace Shotgun
             int bullet = 1;
             while (bullet > 0 && _bullets < 8)
             {
-                for (var i = 0; i < baraban.Length; i++)
-                {
-                    if (baraban[i] == 0 && Math.Random() > 0.5)
+                    
+                    if(baraban[position] == 0 && Math.Random() > 0.5)
                     {
-                        baraban[i] = 1;
-                        _bullets++;
-                        bullet--;
+                        baraban[position] = 1;
+                        _bullets++;                         // счетчик барабана увеличен на 1
+                        bullet--;                           //что зарядили, то исчезает
+                        OnTakeBullet?.Invoke(_bullets);
                     }
-                }
+                position = (position == 7) ? 0 : position + 1; // смещаем барабан на одну позицию
             }
 
         }
+
+        // выстрел
         public bool Shot()
         {
+            bool result = false;
             if (baraban[position] == 1)
             {
                 _bullets--;
                 baraban[position] = 0;
-                return true;
+                result = true;
             }
-            else { return false; }
+            
             position = (position == 7) ? 0 : position + 1;
+            OnShot?.Invoke(_bullets);
+            return result;
         }
 
 
